@@ -25,12 +25,12 @@ pdf.add_font('Roboto-Italic', '', "Roboto-Italic.ttf")
 pdf.set_font("Roboto-Bold", "", 14)
 margins = 15
 puzzle_margin = 40
-offset = 135
+nbr_per_page = args.ppp
+offset = 270/nbr_per_page
 divider_height = 5
 pdf.set_margins(margins, margins)
 
 column_width = 90
-nbr_per_page = args.ppp
 nbr_lines_list_first_page = 45
 nbr_lines_list = 50
 
