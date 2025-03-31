@@ -56,7 +56,7 @@ def puzzle_page(nbr, link, title, author, rules, image):
     pdf.set_link(anchor, position*offset+margins)
     pdf.write(text=f'{nbr+1} - {title}\n')
     pdf.set_font("Roboto-Italic", "", 20)
-    pdf.write(text=f'{author}\n')
+    pdf.write(text=f'by {author}\n')
     pdf.set_font("Roboto", "", 14)
     pdf.write(text=link, link=link)
     pdf.set_font("Roboto", "", 12)
@@ -65,41 +65,7 @@ def puzzle_page(nbr, link, title, author, rules, image):
     pdf.multi_cell(column_width, None, rules)
     return anchor
 
-
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.by import By
-import io
-from PIL import Image
-
-def get_image_and_rules(url):
-    driver = webdriver.Chrome()
-    driver.get(url)
-
-    # Make sure the page is loaded properly
-    WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, 'dialog')))
-    WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'svgrenderer')))
-
-    # Hide SvenPeek so it does not appear on the screenshot
-    driver.execute_script('document.getElementById("svenpeek").remove()')
-
-    # Acknowledges the dialog
-    dialog = driver.find_element(By.CLASS_NAME, 'dialog')
-    dialog.find_element(By.CSS_SELECTOR, 'button').click()
-
-    # Screenshot the puzzle image
-    image_binary = driver.find_element(By.ID, 'svgrenderer').screenshot_as_png
-    img = Image.open(io.BytesIO(image_binary))
-
-    # Get the rest of the data from the page
-    title = driver.find_element(By.CLASS_NAME, 'puzzle-title').text
-    author = driver.find_element(By.CLASS_NAME, 'puzzle-author').text
-    rules = driver.find_element(By.CLASS_NAME, 'puzzle-rules').text
-
-    driver.close()
-    return title, author, rules, img
+from puzzle_url_tools import get_image_and_rules
 
 lines = args.input.read().splitlines()
 pack_title = ''
