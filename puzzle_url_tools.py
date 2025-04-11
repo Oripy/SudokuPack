@@ -76,6 +76,35 @@ def get_image_and_rules(url):
             rules = rules_div.find_element(By.CLASS_NAME, 'info').text
             return title, author, rules, img
 
+        case "pzv.jp" | "puzz.link":
+            # Make sure the page is loaded properly
+            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'divques')))
+
+            title = driver.getTitle().split(" player")[0]
+            author = ""
+            rules = ""
+            image_binary = driver.find_element(By.ID, 'divques').screenshot_as_png
+            img = io.BytesIO(image_binary)
+            return title, author, rules, img
+
+        case "pedros.works":
+            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'papuzz')))
+
+            papuzz = driver.find_element(By.ID, 'papuzz')
+            image_binary = papuzz.find_element(By.ID, 'puzzle').screenshot_as_png
+            img = io.BytesIO(image_binary)
+
+            title = puzzleinfo.find_element(By.ID, 'reactio12').text
+            author = puzzleinfo.find_element(By.ID, 'reactio14').text
+
+            help_button = driver.find_element(By.CLASS_NAME, 'help selectable')
+            help_button.click()
+            
+            rules_area = drive.find_element(By.CLASS_NAME, 'quote')
+            rules = rules_area.find_element(By.TAG_NAME, 'blockquote').text;
+            
+            return title, author, rules, img
+
         case _:
             return "", "", "", Image.new("RGB", (100, 100), (255, 255, 255))
 
