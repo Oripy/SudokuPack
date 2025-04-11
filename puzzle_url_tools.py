@@ -29,7 +29,9 @@ def get_image_and_rules(url):
     print(f"Loading {url}")
     driver.get(url)
 
-    match urlparse(driver.current_url)['netloc']:
+    scheme, host, path, params, query, fragment = urlparse(driver.current_url)
+
+    match host:
         case "sudokupad.app" | "dev.sudokupad.app":
             # Make sure the page is loaded properly
             WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, 'dialog')))
