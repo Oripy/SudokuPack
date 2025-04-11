@@ -1,5 +1,6 @@
 import configparser
 from urllib.parse import urlparse
+import base64
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -64,7 +65,7 @@ def get_image_and_rules(url):
             title = puzzleinfo.find_element(By.ID, 'puzzletitle').text
             author = puzzleinfo.find_element(By.ID, 'puzzleauthor').text
             canvas = driver.find_element(By.ID, 'canvas')
-            canvas_base64 = browser.execute_script("return arguments[0].toDataURL('image/png').substring(21);", canvas)
+            canvas_base64 = driver.execute_script("return arguments[0].toDataURL('image/png').substring(21);", canvas)
             canvas_png = base64.b64decode(canvas_base64)
             img = io.BytesIO(canvas_png)
 
