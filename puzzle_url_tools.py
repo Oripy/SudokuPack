@@ -91,6 +91,8 @@ def get_image_and_rules(url):
             WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'papuzz')))
 
             papuzz = driver.find_element(By.ID, 'papuzz')
+            driver.execute_script("arguments[0].setAttribute('style',arguments[1])",papuzz, 'background:white;')
+
             image_binary = papuzz.find_element(By.ID, 'puzzle').screenshot_as_png
             img = io.BytesIO(image_binary)
 
