@@ -1,4 +1,5 @@
 import configparser
+from urllib.parse import urlparse
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -28,29 +29,52 @@ def get_image_and_rules(url):
     print(f"Loading {url}")
     driver.get(url)
 
-    # Make sure the page is loaded properly
-    WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, 'dialog')))
-    WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'svgrenderer')))
+    match urlparse(driver.current_url)['netloc']:
+        case "sudokupad.app" | "dev.sudokupad.app":
+            # Make sure the page is loaded properly
+            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, 'dialog')))
+            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'svgrenderer')))
 
-    # Hide SvenPeek so it does not appear on the screenshot
-    driver.execute_script('document.getElementById("svenpeek").remove()')
+            # Hide SvenPeek so it does not appear on the screenshot
+            driver.execute_script('document.getElementById("svenpeek").remove()')
 
-    # Acknowledges the dialog
-    dialog = driver.find_element(By.CLASS_NAME, 'dialog')
-    dialog.find_element(By.CSS_SELECTOR, 'button').click()
+            # Acknowledges the dialog
+            dialog = driver.find_element(By.CLASS_NAME, 'dialog')
+            dialog.find_element(By.CSS_SELECTOR, 'button').click()
 
-    # Screenshot the puzzle image
-    image_binary = driver.find_element(By.ID, 'svgrenderer').screenshot_as_png
-    img = io.BytesIO(image_binary)
+            # Screenshot the puzzle image
+            image_binary = driver.find_element(By.ID, 'svgrenderer').screenshot_as_png
+            img = io.BytesIO(image_binary)
 
-    # Get the rest of the data from the page
-    title = driver.find_element(By.CLASS_NAME, 'puzzle-title').text
-    author = driver.find_element(By.CLASS_NAME, 'puzzle-author').text[4:] # Remove " by " at the begining of the Author name
-    rules = driver.find_element(By.CLASS_NAME, 'puzzle-rules').get_attribute("innerHTML")
-    rules = rules.replace("<br>", "")
-    rules = emojis.sub(r"\1", rules)
-    
-    return title, author, rules, img
+            # Get the rest of the data from the page
+            title = driver.find_element(By.CLASS_NAME, 'puzzle-title').text
+            author = driver.find_element(By.CLASS_NAME, 'puzzle-author').text[4:] # Remove " by " at the begining of the Author name
+            rules = driver.find_element(By.CLASS_NAME, 'puzzle-rules').get_attribute("innerHTML")
+            rules = rules.replace("<br>", "")
+            rules = emojis.sub(r"\1", rules)
+            return title, author, rules, img
+
+        case "swaroopg92.github.io":
+            # Make sure the page is loaded properly
+            WebDriverWait(driver, 3).until(EC.presence_of_element_located(By.ID, 'canvas'))
+            puzzleinfo = driver.find_element(By.ID, 'puzzleinfo')
+
+            title = puzzleinfo.find_element(By.ID, 'puzzletitle').text
+            author = puzzleinfo.find_element(By.ID, 'puzzleauthor').text
+            canvas = driver.find_element(By.ID, 'canvas')
+            canvas_base64 = browser.execute_script("return arguments[0].toDataURL('image/png').substring(21);", canvas)
+            canvas_png = base64.b64decode(canvas_base64)
+            img = io.BytesIO(canvas_png)
+
+            # Opens the rules
+            puzzleinfo.find_element(By.ID, 'puzzlerules').click()
+
+            rules_div = driver.find_element(By.ID, 'swal2-html-container')
+            rules = rules_div.find_element(By.CLASS_NAME, 'info').text
+            return title, author, rules, img
+
+        case _:
+            return "", "", "", Image.new("RGB", (100, 100), (255, 255, 255))
 
 if __name__ == '__main__':
     pass
