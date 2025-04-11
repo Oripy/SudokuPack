@@ -58,7 +58,7 @@ def get_image_and_rules(url):
 
         case "swaroopg92.github.io":
             # Make sure the page is loaded properly
-            WebDriverWait(driver, 3).until(EC.presence_of_element_located(By.ID, 'canvas'))
+            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'canvas')))
             puzzleinfo = driver.find_element(By.ID, 'puzzleinfo')
 
             title = puzzleinfo.find_element(By.ID, 'puzzletitle').text
