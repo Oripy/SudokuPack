@@ -29,21 +29,21 @@ service = Service(config['DEFAULT']['CHROME_PATH'])
 driver = webdriver.Chrome(options=options, service=service)
 
 def cache(data_file, image_file, title, author, rules, img):
-    with open(data_file, "w") as file:
-        file.write(title)
-        file.write(author)
+    with open(data_file, "w+") as file:
+        file.write(f'{title}\n')
+        file.write(f'{author}\n')
         file.write(rules)
-    Image.open(stream).save(image_file)
+    Image.open(img).save(image_file)
 
 def get_image_and_rules(url):
     print(f"Loading {url}")
-    hashed_url = hashlib.md5(url).hexdigest()
+    hashed_url = hashlib.md5(url.encode()).hexdigest()
     data_file = os.path.join(config['DEFAULT']['CACHE_PATH'], f'{hashed_url}.txt')
-    image_file = os.path.join(config['DEFAULT']['CACHE_PATH'], f'{hashed_url}.txt')
+    image_file = os.path.join(config['DEFAULT']['CACHE_PATH'], f'{hashed_url}.png')
 
     if os.path.exists(data_file) and os.path.exists(image_file):
-        data = file.read().splitlines()
-        return data[0], data[1], data[2], open(image_file, "rb")
+        data = open(data_file, "r").readlines()
+        return data[0][:-1], data[1][:-1], ''.join(data[2:]), open(image_file, "rb")
 
     driver.get(url)
     scheme, host, path, params, query, fragment = urlparse(driver.current_url)
