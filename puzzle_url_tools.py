@@ -1,6 +1,8 @@
 import configparser
 from urllib.parse import urlparse
 import base64
+import hashlib
+import os
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -26,10 +28,24 @@ service = Service(config['DEFAULT']['CHROME_PATH'])
 
 driver = webdriver.Chrome(options=options, service=service)
 
+def cache(data_file, image_file, title, author, rules, img):
+    with open(data_file, "w") as file:
+        file.write(title)
+        file.write(author)
+        file.write(rules)
+    Image.open(stream).save(image_file)
+
 def get_image_and_rules(url):
     print(f"Loading {url}")
-    driver.get(url)
+    hashed_url = hashlib.md5(url).hexdigest()
+    data_file = os.path.join(config['DEFAULT']['CACHE_PATH'], f'{hashed_url}.txt')
+    image_file = os.path.join(config['DEFAULT']['CACHE_PATH'], f'{hashed_url}.txt')
 
+    if os.path.exists(data_file) and os.path.exists(image_file):
+        data = file.read().splitlines()
+        return data[0], data[1], data[2], open(image_file, "rb")
+
+    driver.get(url)
     scheme, host, path, params, query, fragment = urlparse(driver.current_url)
 
     match host:
@@ -55,6 +71,7 @@ def get_image_and_rules(url):
             rules = driver.find_element(By.CLASS_NAME, 'puzzle-rules').get_attribute("innerHTML")
             rules = rules.replace("<br>", "")
             rules = emojis.sub(r"\1", rules)
+            cache(data_file, image_file, title, author, rules, img)
             return title, author, rules, img
 
         case "swaroopg92.github.io":
@@ -74,6 +91,7 @@ def get_image_and_rules(url):
 
             rules_div = driver.find_element(By.ID, 'swal2-html-container')
             rules = rules_div.find_element(By.CLASS_NAME, 'info').text
+            cache(data_file, image_file, title, author, rules, img)
             return title, author, rules, img
 
         case "pzv.jp" | "puzz.link":
@@ -85,6 +103,7 @@ def get_image_and_rules(url):
             rules = ""
             image_binary = driver.find_element(By.ID, 'divques').screenshot_as_png
             img = io.BytesIO(image_binary)
+            cache(data_file, image_file, title, author, rules, img)
             return title, author, rules, img
 
         case "pedros.works":
@@ -104,7 +123,7 @@ def get_image_and_rules(url):
             
             rules_area = driver.find_element(By.CLASS_NAME, 'quote')
             rules = rules_area.find_element(By.TAG_NAME, 'blockquote').text;
-            
+            cache(data_file, image_file, title, author, rules, img)
             return title, author, rules, img
 
         case _:
