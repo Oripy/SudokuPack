@@ -98,7 +98,7 @@ def get_image_and_rules(url):
 
             rules_div = driver.find_element(By.ID, 'swal2-html-container')
             rules = rules_div.find_element(By.CLASS_NAME, 'info').text
-            cache(data_file, image_file, title, author, rules, img)
+            cache(data_file, image_file, real_url, title, author, rules, img, source)
             return real_url, title, author, rules, img, source
 
         case "pzv.jp" | "puzz.link":
@@ -111,7 +111,7 @@ def get_image_and_rules(url):
             rules = ""
             image_binary = driver.find_element(By.ID, 'divques').screenshot_as_png
             img = io.BytesIO(image_binary)
-            cache(data_file, image_file, title, author, rules, img)
+            cache(data_file, image_file, real_url, title, author, rules, img, source)
             return real_url, title, author, rules, img, source
 
         case "pedros.works":
@@ -134,7 +134,7 @@ def get_image_and_rules(url):
             rules_area = driver.find_element(By.CLASS_NAME, 'quote')
             rules = rules_area.find_element(By.TAG_NAME, 'blockquote').text;
             source = f'https://pedros.works/kudamono/pages/{puzzle_type.match(real_url).group(1)}'
-            cache(data_file, image_file, title, author, rules, img)
+            cache(data_file, image_file, real_url, title, author, rules, img, source)
             return real_url, title, author, rules, img, source
 
         case _:
