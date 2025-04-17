@@ -30,6 +30,7 @@ options.add_experimental_option("detach", True)
 service = Service(config['DEFAULT']['CHROME_PATH'])
 
 driver = webdriver.Chrome(options=options, service=service)
+driver.implicitly_wait(10)
 
 def cache(data_file, image_file, real_url, title, author, rules, img, source):
     with open(data_file, "w+") as file:
@@ -45,6 +46,8 @@ def get_rules_from_kudamono(type):
     try:
         requests.get(url)
         driver.get(url)
+        #WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, "genre-rules")))
+        #WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, "quote")))
         rules_area = driver.find_element(By.CLASS_NAME, 'quote')
         rules = rules_area.find_element(By.TAG_NAME, 'blockquote').text;
         return rules
@@ -70,8 +73,8 @@ def get_image_and_rules(url):
         case "sudokupad.app" | "dev.sudokupad.app":
             print("SudokuPad link")
             # Make sure the page is loaded properly
-            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, 'dialog')))
-            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'svgrenderer')))
+            #WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, 'dialog')))
+            #WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'svgrenderer')))
 
             # Hide SvenPeek so it does not appear on the screenshot
             driver.execute_script('document.getElementById("svenpeek").remove()')
@@ -96,7 +99,7 @@ def get_image_and_rules(url):
         case "swaroopg92.github.io":
             print("Penpa+ link")
             # Make sure the page is loaded properly
-            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'canvas')))
+            #WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'canvas')))
             puzzleinfo = driver.find_element(By.ID, 'puzzleinfo')
 
             title = puzzleinfo.find_element(By.ID, 'puzzletitle').text
@@ -117,7 +120,7 @@ def get_image_and_rules(url):
         case "pzv.jp" | "puzz.link":
             print("puzz.link link")
             # Make sure the page is loaded properly
-            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'divques')))
+            #WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'divques')))
 
             title = driver.title.split(" player")[0]
             author = ""
@@ -135,7 +138,7 @@ def get_image_and_rules(url):
         case "pedros.works":
             print("Kudamono link")
             # Make sure the page is loaded properly
-            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'papuzz')))
+            #WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'papuzz')))
 
             papuzz = driver.find_element(By.ID, 'papuzz')
             driver.execute_script("arguments[0].setAttribute('style',arguments[1])",papuzz, 'background:white;')
