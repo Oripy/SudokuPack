@@ -29,10 +29,12 @@ service = Service(config['DEFAULT']['CHROME_PATH'])
 
 driver = webdriver.Chrome(options=options, service=service)
 
-def cache(data_file, image_file, title, author, rules, img):
+def cache(data_file, image_file, real_url, title, author, rules, img, source):
     with open(data_file, "w+") as file:
+        file.write(f'{real_url}\n')
         file.write(f'{title}\n')
         file.write(f'{author}\n')
+        file.write(f'{source}\n')
         file.write(rules)
     Image.open(img).save(image_file)
 
@@ -44,7 +46,7 @@ def get_image_and_rules(url):
 
     if os.path.exists(data_file) and os.path.exists(image_file):
         data = open(data_file, "r").readlines()
-        return data[0][:-1], data[1][:-1], ''.join(data[2:]), open(image_file, "rb")
+        return data[0][:-1], data[1][:-1], data[2][:-1], ''.join(data[4:]), open(image_file, "rb"), data[3][:-1]
 
     driver.get(url)
     real_url = driver.current_url
@@ -74,7 +76,7 @@ def get_image_and_rules(url):
             rules = driver.find_element(By.CLASS_NAME, 'puzzle-rules').get_attribute("innerHTML")
             rules = rules.replace("<br>", "")
             rules = emojis.sub(r"\1", rules)
-            cache(data_file, image_file, title, author, rules, img)
+            cache(data_file, image_file, real_url, title, author, rules, img, source)
             return real_url, title, author, rules, img, source
 
         case "swaroopg92.github.io":
