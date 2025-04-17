@@ -76,14 +76,22 @@ lines = args.input.read().splitlines()
 pack_title = ''
 details = []
 for line in lines:
-    print(line)
     if line == '':
         continue
+    print(line)
+    if len(line.split()) > 1:
+        url, author_given = line.split()[:2]
+        rules_given = " ".join(line.split()[2:])
+    else:
+        url, author_given = line, ""
     if not bool(url_check.match(line)):
         pack_title = line
         continue
     real_url, title, author, rules, img, source = get_image_and_rules(line)
-    
+    if author == "":
+        author = author_given
+    if rules == "":
+        rules = rules_given
     details.append([line, real_url, title, author, rules, img, source])
 
 # Allow more pages for title page if it will overflow
