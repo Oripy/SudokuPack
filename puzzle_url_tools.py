@@ -3,13 +3,15 @@ from urllib.parse import urlparse
 import base64
 import hashlib
 import os
+import requests
 
 config = configparser.ConfigParser()
 config.read('config.ini')
 
 import re
 emojis = re.compile(r'<[^>]+alt="([^"]+)"[^>]+>')
-puzzle_type = re.compile(r'G=([^&]+)&')
+puzzle_type_kudamono = re.compile(r'G=([^&]+)')
+puzzle_type_puzz_link = re.compile(r'\?([^\/]+)')
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -37,6 +39,17 @@ def cache(data_file, image_file, real_url, title, author, rules, img, source):
         file.write(f'{source}\n')
         file.write(rules)
     Image.open(img).save(image_file)
+
+def get_rules_from_kudamono(type):
+    url = f'https://pedros.works/kudamono/pages/{type}'
+    try:
+        requests.get(url)
+        driver.get(url)
+        rules_area = driver.find_element(By.CLASS_NAME, 'quote')
+        rules = rules_area.find_element(By.TAG_NAME, 'blockquote').text;
+        return rules
+    except:
+        return ""
 
 def get_image_and_rules(url):
     print(f"Loading {url}")
@@ -108,7 +121,12 @@ def get_image_and_rules(url):
 
             title = driver.title.split(" player")[0]
             author = ""
-            rules = ""
+            type = puzzle_type_puzz_link.search(real_url).group(1)
+            rules = get_rules_from_kudamono(type)
+            if rules == "":
+                print("Warning: Rules not found")
+            else:
+                source = f'https://pedros.works/kudamono/pages/{type}'
             image_binary = driver.find_element(By.ID, 'divques').screenshot_as_png
             img = io.BytesIO(image_binary)
             cache(data_file, image_file, real_url, title, author, rules, img, source)
@@ -128,12 +146,9 @@ def get_image_and_rules(url):
             title = driver.find_element(By.ID, 'reactio12').text
             author = driver.find_element(By.ID, 'reactio14').text
 
-            help_button = driver.find_element(By.CLASS_NAME, 'help')
-            help_button.click()
-            
-            rules_area = driver.find_element(By.CLASS_NAME, 'quote')
-            rules = rules_area.find_element(By.TAG_NAME, 'blockquote').text;
-            source = f'https://pedros.works/kudamono/pages/{puzzle_type.search(real_url).group(1)}'
+            type = puzzle_type_kudamono.search(real_url).group(1)
+            rules = get_rules_from_kudamono(type)
+            source = f'https://pedros.works/kudamono/pages/{type}'
             cache(data_file, image_file, real_url, title, author, rules, img, source)
             return real_url, title, author, rules, img, source
 
