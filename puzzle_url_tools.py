@@ -122,13 +122,13 @@ def get_image_and_rules(url):
             title = driver.title.split(" player")[0]
             author = ""
             type = puzzle_type_puzz_link.search(real_url).group(1)
+            image_binary = driver.find_element(By.ID, 'divques').screenshot_as_png
+            img = io.BytesIO(image_binary)
             rules = get_rules_from_kudamono(type)
             if rules == "":
                 print("Warning: Rules not found")
             else:
                 source = f'https://pedros.works/kudamono/pages/{type}'
-            image_binary = driver.find_element(By.ID, 'divques').screenshot_as_png
-            img = io.BytesIO(image_binary)
             cache(data_file, image_file, real_url, title, author, rules, img, source)
             return real_url, title, author, rules, img, source
 
