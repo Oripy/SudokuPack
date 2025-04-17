@@ -9,6 +9,7 @@ config.read('config.ini')
 
 import re
 emojis = re.compile(r'<[^>]+alt="([^"]+)"[^>]+>')
+puzzle_type = re.compile(r'G=([^&]+)&')
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -46,7 +47,9 @@ def get_image_and_rules(url):
         return data[0][:-1], data[1][:-1], ''.join(data[2:]), open(image_file, "rb")
 
     driver.get(url)
-    scheme, host, path, params, query, fragment = urlparse(driver.current_url)
+    real_url = driver.current_url
+    scheme, host, path, params, query, fragment = urlparse(real_url)
+    source = ""
 
     match host:
         case "sudokupad.app" | "dev.sudokupad.app":
@@ -72,7 +75,7 @@ def get_image_and_rules(url):
             rules = rules.replace("<br>", "")
             rules = emojis.sub(r"\1", rules)
             cache(data_file, image_file, title, author, rules, img)
-            return title, author, rules, img
+            return real_url, title, author, rules, img, source
 
         case "swaroopg92.github.io":
             # Make sure the page is loaded properly
@@ -92,7 +95,7 @@ def get_image_and_rules(url):
             rules_div = driver.find_element(By.ID, 'swal2-html-container')
             rules = rules_div.find_element(By.CLASS_NAME, 'info').text
             cache(data_file, image_file, title, author, rules, img)
-            return title, author, rules, img
+            return real_url, title, author, rules, img, source
 
         case "pzv.jp" | "puzz.link":
             # Make sure the page is loaded properly
@@ -104,7 +107,7 @@ def get_image_and_rules(url):
             image_binary = driver.find_element(By.ID, 'divques').screenshot_as_png
             img = io.BytesIO(image_binary)
             cache(data_file, image_file, title, author, rules, img)
-            return title, author, rules, img
+            return real_url, title, author, rules, img, source
 
         case "pedros.works":
             WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'papuzz')))
@@ -123,11 +126,12 @@ def get_image_and_rules(url):
             
             rules_area = driver.find_element(By.CLASS_NAME, 'quote')
             rules = rules_area.find_element(By.TAG_NAME, 'blockquote').text;
+            source = f'https://pedros.works/kudamono/pages/{puzzle_type.match(real_url).group(1)}'
             cache(data_file, image_file, title, author, rules, img)
-            return title, author, rules, img
+            return real_url, title, author, rules, img, source
 
         case _:
-            return "", "", "", Image.new("RGB", (100, 100), (255, 255, 255))
+            return "", "", "", Image.new("RGB", (100, 100), (255, 255, 255)), source
 
 if __name__ == '__main__':
     pass
