@@ -43,9 +43,9 @@ def title_page(title, details):
     pdf.cell(0, h=divider_height, new_x=XPos.LMARGIN, new_y=YPos.NEXT, border="T")
     for i in range(len(details)):
         pdf.set_font("Roboto", "", 14)
-        pdf.cell(0, h=5, text=f'{i+1} - {details[i][1]} {details[i][2]}\n', new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=details[i][5])
+        pdf.cell(0, h=5, text=f'{i+1} - {details[i][2]} by {details[i][3]}\n', new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=details[i][7])
 
-def puzzle_page(nbr, link, title, author, rules, image):
+def puzzle_page(nbr, link, real_url, title, author, rules, image, source=""):
     position = nbr%nbr_per_page
     pdf.set_y(position*(offset-divider_height)+margins)
     if position != 0:
@@ -58,11 +58,14 @@ def puzzle_page(nbr, link, title, author, rules, image):
     pdf.set_font("Roboto-Italic", "", 20)
     pdf.write(text=f'by {author}\n')
     pdf.set_font("Roboto", "", 14)
-    pdf.write(text=link, link=link)
+    pdf.write(text=link, link=real_url)
     pdf.set_font("Roboto", "", 12)
     pdf.set_y(position*offset+puzzle_margin)
     pdf.set_x(-(margins + column_width))
     pdf.multi_cell(column_width, None, rules)
+    if source != "":
+        pdf.set_font("Roboto-Italic", "", 10)
+        pdf.write(text="source", link=source)
     return anchor
 
 from puzzle_url_tools import get_image_and_rules
@@ -77,9 +80,9 @@ for line in lines:
     if not bool(url_check.match(line)):
         pack_title = line
         continue
-    title, author, rules, img = get_image_and_rules(line)
+    real_url, title, author, rules, img, source = get_image_and_rules(line)
     
-    details.append([line, title, author, rules, img])
+    details.append([line, real_url, title, author, rules, img, source])
 
 # Allow more pages for title page if it will overflow
 if len(details) > nbr_lines_list_first_page:
