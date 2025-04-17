@@ -55,6 +55,7 @@ def get_image_and_rules(url):
 
     match host:
         case "sudokupad.app" | "dev.sudokupad.app":
+            print("SudokuPad link")
             # Make sure the page is loaded properly
             WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, 'dialog')))
             WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'svgrenderer')))
@@ -80,6 +81,7 @@ def get_image_and_rules(url):
             return real_url, title, author, rules, img, source
 
         case "swaroopg92.github.io":
+            print("Penpa+ link")
             # Make sure the page is loaded properly
             WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'canvas')))
             puzzleinfo = driver.find_element(By.ID, 'puzzleinfo')
@@ -100,6 +102,7 @@ def get_image_and_rules(url):
             return real_url, title, author, rules, img, source
 
         case "pzv.jp" | "puzz.link":
+            print("puzz.link link")
             # Make sure the page is loaded properly
             WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'divques')))
 
@@ -112,6 +115,8 @@ def get_image_and_rules(url):
             return real_url, title, author, rules, img, source
 
         case "pedros.works":
+            print("Kudamono link")
+            # Make sure the page is loaded properly
             WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'papuzz')))
 
             papuzz = driver.find_element(By.ID, 'papuzz')
@@ -133,7 +138,8 @@ def get_image_and_rules(url):
             return real_url, title, author, rules, img, source
 
         case _:
-            return "", "", "", Image.new("RGB", (100, 100), (255, 255, 255)), source
+            print("link type not supported")
+            return real_url, "", "", "", Image.new("RGB", (100, 100), (255, 255, 255)), source
 
 if __name__ == '__main__':
     pass
