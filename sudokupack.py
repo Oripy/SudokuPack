@@ -64,6 +64,7 @@ def puzzle_page(nbr, link, real_url, title, author, rules, image, source=""):
     pdf.set_x(-(margins + column_width))
     pdf.multi_cell(column_width, None, rules)
     if source != "":
+        pdf.set_x(-(margins + column_width))
         pdf.set_font("Roboto-Italic", "", 10)
         pdf.write(text="source", link=source)
     return anchor

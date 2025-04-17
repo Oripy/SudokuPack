@@ -133,7 +133,7 @@ def get_image_and_rules(url):
             
             rules_area = driver.find_element(By.CLASS_NAME, 'quote')
             rules = rules_area.find_element(By.TAG_NAME, 'blockquote').text;
-            source = f'https://pedros.works/kudamono/pages/{puzzle_type.match(real_url).group(1)}'
+            source = f'https://pedros.works/kudamono/pages/{puzzle_type.search(real_url).group(1)}'
             cache(data_file, image_file, real_url, title, author, rules, img, source)
             return real_url, title, author, rules, img, source
 
