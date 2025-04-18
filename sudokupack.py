@@ -47,6 +47,7 @@ def title_page(title, details):
         pdf.cell(0, h=5, text=f'{i+1} - {details[i][2]}{f' by {details[i][3]}' if details[i][3] != "" else ""}\n', new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=details[i][7])
 
 def puzzle_page(nbr, link, real_url, title, author, rules, image, source=""):
+    global skipped
     position = (nbr + skipped)%nbr_per_page
     pdf.set_y(position*(offset-divider_height)+margins)
     if position != 0:
@@ -107,7 +108,7 @@ for i in range((len(details)-nbr_lines_list_first_page)//nbr_lines_list):
     pdf.add_page()
 
 for i in range(len(details)):
-    if i%nbr_per_page == 0:
+    if (i + skipped)%nbr_per_page == 0:
         pdf.add_page()
     details[i].append(puzzle_page(i, *details[i]))
 
