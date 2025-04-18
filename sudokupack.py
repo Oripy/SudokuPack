@@ -43,7 +43,7 @@ def title_page(title, details):
     pdf.cell(0, h=divider_height, new_x=XPos.LMARGIN, new_y=YPos.NEXT, border="T")
     for i in range(len(details)):
         pdf.set_font("Roboto", "", 14)
-        pdf.cell(0, h=5, text=f'{i+1} - {details[i][2]}{f'by {details[i][3]}' if details[i][3] != "" else ""}\n', new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=details[i][7])
+        pdf.cell(0, h=5, text=f'{i+1} - {details[i][2]}{f' by {details[i][3]}' if details[i][3] != "" else ""}\n', new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=details[i][7])
 
 def puzzle_page(nbr, link, real_url, title, author, rules, image, source=""):
     position = nbr%nbr_per_page
