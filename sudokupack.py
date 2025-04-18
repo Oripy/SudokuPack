@@ -29,6 +29,7 @@ nbr_per_page = args.ppp
 offset = 270/nbr_per_page
 divider_height = 5
 pdf.set_margins(margins, margins)
+skipped = 0
 
 column_width = 90
 nbr_lines_list_first_page = 45
@@ -46,7 +47,7 @@ def title_page(title, details):
         pdf.cell(0, h=5, text=f'{i+1} - {details[i][2]}{f' by {details[i][3]}' if details[i][3] != "" else ""}\n', new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=details[i][7])
 
 def puzzle_page(nbr, link, real_url, title, author, rules, image, source=""):
-    position = nbr%nbr_per_page
+    position = (nbr + skipped)%nbr_per_page
     pdf.set_y(position*(offset-divider_height)+margins)
     if position != 0:
         pdf.cell(0, h=divider_height, new_x=XPos.LMARGIN, new_y=YPos.NEXT, border="T")
@@ -68,6 +69,11 @@ def puzzle_page(nbr, link, real_url, title, author, rules, image, source=""):
         pdf.set_x(-(margins + column_width))
         pdf.set_font("Roboto-Italic", "", 10)
         pdf.write(text="source", link=source)
+    next_position = (nbr + skipped + 1)%nbr_per_page
+    if next_position != 0:
+        next_y = next_position*(offset-divider_height)+margins
+        if pdf.get_y() > next_y:
+            skipped += 1
     return anchor
 
 from puzzle_url_tools import get_image_and_rules
