@@ -105,7 +105,7 @@ for line in lines:
     author_given = ""
     rules_given = ""
     splited_line = line.split()
-    match args.numbering:
+    match args.n__numbering:
         case 'custom':
             numbering = splited_line[0].replace('_', ' ')
         case 'auto':
@@ -113,7 +113,7 @@ for line in lines:
         case _:
             numbering = ''
     for i in range(len(splited_line)):
-        if args.numbering == 'custom' and i == 0:
+        if args.n__numbering == 'custom' and i == 0:
             continue
         if url_check.match(splited_line[i]):
             urls.append(splited_line[i])
@@ -121,7 +121,7 @@ for line in lines:
             author_given = splited_line[i]
             break
     if len(splited_line) > (len(urls) + (1 if author_given != "" else 0)):
-        rules_given = " ".join(line.split()[(len(urls) + (1 if author_given != "" else 0) + (1 if args.numbering == 'custom' else 0)):])
+        rules_given = " ".join(line.split()[(len(urls) + (1 if author_given != "" else 0) + (1 if args.n__numbering == 'custom' else 0)):])
 
     if len(urls) == 0:
         if pack_title == '':
