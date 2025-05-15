@@ -96,7 +96,6 @@ from puzzle_url_tools import get_image_and_rules
 lines = args.input.read().splitlines()
 pack_title = ''
 pack_intro = ''
-index = 1
 details = []
 for line in lines:
     if line == '':
@@ -108,20 +107,21 @@ for line in lines:
     splited_line = line.split()
     match args.numbering:
         case 'custom':
-            numbering = splited_line.pop(0).replace('_', ' ')
+            numbering = splited_line[0].replace('_', ' ')
         case 'auto':
-            numbering = str(index)
-            index += 1
+            numbering = len(details) + 1
         case _:
             numbering = ''
     for i in range(len(splited_line)):
+        if args.numbering == 'custom' and i == 0:
+            continue
         if url_check.match(splited_line[i]):
             urls.append(splited_line[i])
         else:
             author_given = splited_line[i]
             break
     if len(splited_line) > (len(urls) + (1 if author_given != "" else 0)):
-        rules_given = " ".join(line.split()[(len(urls) + (1 if author_given != "" else 0)):])
+        rules_given = " ".join(line.split()[(len(urls) + (1 if author_given != "" else 0) + (1 if args.numbering == 'custom' else 0)):])
 
     if len(urls) == 0:
         if pack_title == '':
