@@ -5,7 +5,8 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('input', type=argparse.FileType('r'), help='input filename')
 parser.add_argument('output', nargs='?', help='pdf output filename - default to csv name')
-parser.add_argument('--ppp', type=int, default=2, help="Nbr of puzzle per page")
+parser.add_argument('--ppp', type=int, default=2, help='number of puzzle per page')
+parser.add_argument('-n' '--numbering', default='auto', choices=['auto', 'none', 'custom'], help='define if puzzles should be numbered (auto), not numbered (none) or (custom). custom will take the fist value on each line of input file, replacing "_" as spaces.)')
 
 args = parser.parse_args()
 
@@ -46,10 +47,14 @@ def title_page(title, intro, details):
     if intro != '':
         pdf.multi_cell(0, text=f'{intro}', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         pdf.cell(0, h=divider_height, new_x=XPos.LMARGIN, new_y=YPos.NEXT, border="T")
-    for i in range(len(details)):
-        pdf.cell(0, h=5, text=f'{i+1} - {details[i][2]}{f' by {details[i][3]}' if details[i][3] != "" else ""}\n', new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=details[i][7])
+    for line in details:
+        if line[7] == '':
+            numbering = ''
+        else:
+            numbering = f'{line[7]} - '
+        pdf.cell(0, h=5, text=f'{numbering}{line[2]}{f' by {line[3]}' if line[3] != "" else ""}\n', new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=line[8])
 
-def puzzle_page(nbr, links, real_url, title, author, rules, image, source=""):
+def puzzle_page(nbr, links, real_url, title, author, rules, image, source, numbering):
     global skipped
     position = (nbr + skipped)%nbr_per_page
     pdf.set_y(position*(offset-divider_height)+margins)
@@ -59,7 +64,10 @@ def puzzle_page(nbr, links, real_url, title, author, rules, image, source=""):
     pdf.set_font("Roboto-Bold", "", 20)
     anchor = pdf.add_link()
     pdf.set_link(anchor, position*offset+margins)
-    pdf.write(text=f'{nbr+1} - {title}\n')
+    if numbering == '':
+        pdf.write(text=f'{title}\n')
+    else:
+        pdf.write(text=f'{numbering} - {title}\n')
     if author != "":
         pdf.set_font("Roboto-Italic", "", 20)
         pdf.write(text=f'by {author}\n')
@@ -88,6 +96,7 @@ from puzzle_url_tools import get_image_and_rules
 lines = args.input.read().splitlines()
 pack_title = ''
 pack_intro = ''
+index = 1
 details = []
 for line in lines:
     if line == '':
@@ -97,6 +106,14 @@ for line in lines:
     author_given = ""
     rules_given = ""
     splited_line = line.split()
+    match args.numbering:
+        case 'custom':
+            numbering = splited_line.pop(0).replace('_', ' ')
+        case 'auto':
+            numbering = str(index)
+            index += 1
+        case _:
+            numbering = ''
     for i in range(len(splited_line)):
         if url_check.match(splited_line[i]):
             urls.append(splited_line[i])
@@ -117,7 +134,7 @@ for line in lines:
         author = author_given
     if rules == "":
         rules = rules_given
-    details.append([urls, real_url, title, author, rules, img, source])
+    details.append([urls, real_url, title, author, rules, img, source, numbering])
 
 # Allow more pages for title page if it will overflow
 if len(details) > nbr_lines_list_first_page:
