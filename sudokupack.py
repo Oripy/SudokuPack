@@ -19,11 +19,7 @@ from PIL import Image
 pdf = fpdf.FPDF(orientation='P', format='A4', unit='mm')
 pdf.add_page()
 
-pdf.add_font('DejaVuSans', '', "DejaVuSans.ttf")
-pdf.add_font('DejaVuSans-Bold', '', "DejaVuSans-Bold.ttf")
-pdf.add_font('DejaVuSans-Italic', '', "DejaVuSans-Oblique.ttf")
-
-pdf.set_font("DejaVuSans-Bold", "", 14)
+pdf.set_font("Arial", "B", 14)
 margins = 15
 puzzle_margin = 40
 nbr_per_page = args.ppp
@@ -37,13 +33,13 @@ nbr_lines_list_first_page = 45
 nbr_lines_list = 50
 
 def title_page(title, intro, details):
-    pdf.set_font("DejaVuSans-Bold", "", 30)
+    pdf.set_font("Arial", "B", 30)
     for elem in title.split('\\n'):
         pdf.cell(0, h=10, text=elem, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
-        pdf.set_font("DejaVuSans", "", 20)
+        pdf.set_font("Arial", "", 20)
     pdf.cell(0, h=divider_height, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
     pdf.cell(0, h=divider_height, new_x=XPos.LMARGIN, new_y=YPos.NEXT, border="T")
-    pdf.set_font("DejaVuSans", "", 14)
+    pdf.set_font("Arial", "", 14)
     if intro != '':
         pdf.multi_cell(0, text=f'{intro}', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         pdf.cell(0, h=divider_height, new_x=XPos.LMARGIN, new_y=YPos.NEXT, border="T")
@@ -61,7 +57,7 @@ def puzzle_page(nbr, links, real_url, title, author, rules, image, source, numbe
     if position != 0:
         pdf.cell(0, h=divider_height, new_x=XPos.LMARGIN, new_y=YPos.NEXT, border="T")
     pdf.image(image, margins, position*offset+puzzle_margin, column_width, link=real_url)
-    pdf.set_font("DejaVuSans-Bold", "", 20)
+    pdf.set_font("Arial", "B", 20)
     anchor = pdf.add_link()
     pdf.set_link(anchor, position*offset+margins)
     if numbering == '':
@@ -69,20 +65,20 @@ def puzzle_page(nbr, links, real_url, title, author, rules, image, source, numbe
     else:
         pdf.write(text=f'{numbering} - {title}\n')
     if author != "":
-        pdf.set_font("DejaVuSans-Italic", "", 20)
+        pdf.set_font("Arial", "I", 20)
         pdf.write(text=f'by {author}\n')
-    pdf.set_font("DejaVuSans", "", 14)
+    pdf.set_font("Arial", "", 14)
     pdf.write(text=links[0], link=real_url)
-    pdf.set_font("DejaVuSans", "", 12)
+    pdf.set_font("Arial", "", 12)
     for link in links[1:]:
         pdf.write(text=f'\nAlt link: {link}', link=link)
-    pdf.set_font("DejaVuSans", "", 12)
+    pdf.set_font("Arial", "", 12)
     pdf.set_y(position*offset+puzzle_margin)
     pdf.set_x(-(margins + column_width))
     pdf.multi_cell(column_width, None, rules)
     if source != "":
         pdf.set_x(-(margins + column_width))
-        pdf.set_font("DejaVuSans-Italic", "", 10)
+        pdf.set_font("Arial", "I", 10)
         pdf.write(text="source", link=source)
     next_position = (nbr + skipped + 1)%nbr_per_page
     if next_position != 0:
