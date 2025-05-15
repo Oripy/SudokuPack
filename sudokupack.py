@@ -24,7 +24,7 @@ pdf.add_font('DejaVuSans', 'B', "DejaVuSans-Bold.ttf")
 pdf.add_font('DejaVuSans', 'I', "DejaVuSans-Oblique.ttf")
 pdf.add_font('Noto', '', 'NotoColorEmoji-Regular.ttf')
 
-pdf.set_fallback_fonts(["Noto"])
+pdf.set_fallback_fonts(["Noto"], exact_match=False)
 
 pdf.set_font("DejaVuSans", "B", 14)
 margins = 15
