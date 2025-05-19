@@ -19,14 +19,12 @@ from PIL import Image
 pdf = fpdf.FPDF(orientation='P', format='A4', unit='mm')
 pdf.add_page()
 
-pdf.add_font('Roboto', '', "Roboto.ttf")
-pdf.add_font('Roboto', 'B', "Roboto-Bold.ttf")
-pdf.add_font('Roboto', 'I', "Roboto-Italic.ttf")
+pdf.add_font('Noto', '', 'NotoSans-VariableFont_wdth,wght.ttf')
 pdf.add_font('Noto', '', 'NotoColorEmoji-Regular.ttf')
 
 pdf.set_fallback_fonts(["Noto"], exact_match=False)
 
-pdf.set_font("Roboto", "B", 14)
+pdf.set_font("Noto", "B", 14)
 margins = 15
 puzzle_margin = 40
 nbr_per_page = args.ppp
