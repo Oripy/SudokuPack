@@ -72,11 +72,11 @@ def puzzle_page(nbr, links, real_url, title, author, rules, image, source, numbe
             dummy.set_x(-(margins + column_width))
             dummy.set_font("", "I", 10)
             dummy.write(text="source", link=source)
-        if dummy.page_break_triggered:
-            pdf.add_page()
-            skipped += 1
-            position = (nbr + skipped)%nbr_per_page
-            pdf.set_y(position*(offset-divider_height)+margins)
+    if dummy.page_break_triggered:
+        pdf.add_page()
+        skipped += 1
+        position = (nbr + skipped)%nbr_per_page
+        pdf.set_y(position*(offset-divider_height)+margins)
 
     if position != 0:
         pdf.cell(0, h=divider_height, new_x=XPos.LMARGIN, new_y=YPos.NEXT, border="T")
