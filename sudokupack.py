@@ -61,6 +61,23 @@ def puzzle_page(nbr, links, real_url, title, author, rules, image, source, numbe
     global skipped
     position = (nbr + skipped)%nbr_per_page
     pdf.set_y(position*(offset-divider_height)+margins)
+
+    with pdf.offset_rendering() as dummy:
+        # Dummy rendering to check if page break is needed
+        dummy.set_font("", "", 12)
+        dummy.set_y(position*offset+puzzle_margin)
+        dummy.set_x(-(margins + column_width))
+        dummy.multi_cell(column_width, None, rules)
+        if source != "":
+            dummy.set_x(-(margins + column_width))
+            dummy.set_font("", "I", 10)
+            dummy.write(text="source", link=source)
+        if dummy.page_break_triggered:
+            pdf.add_page()
+            skipped += 1
+            position = (nbr + skipped)%nbr_per_page
+            pdf.set_y(position*(offset-divider_height)+margins)
+
     if position != 0:
         pdf.cell(0, h=divider_height, new_x=XPos.LMARGIN, new_y=YPos.NEXT, border="T")
     pdf.image(image, margins, position*offset+puzzle_margin, column_width, link=real_url)
